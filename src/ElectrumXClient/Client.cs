@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ElectrumXClient
 {
-    public class Client : IDisposable
+    public class Client : IDisposable, IClient
     {
         private string _host;
         private int _port;
@@ -19,7 +19,7 @@ namespace ElectrumXClient
         SslStream _sslStream;
         NetworkStream _tcpStream;
         Stream _stream;
-       // readonly int BUFFERSIZE = 2048;
+        // readonly int BUFFERSIZE = 2048;
 
         public Client(string host, int port, bool useSSL)
         {
@@ -182,7 +182,7 @@ namespace ElectrumXClient
 
         private async Task<string> SendMessage(byte[] requestData)
         {
-          //  var buffer = new byte[BUFFERSIZE];
+            //  var buffer = new byte[BUFFERSIZE];
             await _stream.WriteAsync(requestData, 0, requestData.Length);
 
 
@@ -201,7 +201,7 @@ namespace ElectrumXClient
                     Array.Resize(ref myReadBuffer, myReadBuffer.Length + bufsize);
                     numberOfBytesRead = _stream.Read(myReadBuffer, readed, bufsize);
                     readed += numberOfBytesRead;
-                    System.Threading.Thread.Sleep(500);
+                    await Task.Delay(500);
                 }
                 while (_tcpStream.DataAvailable);
                 using (var ms = new MemoryStream(myReadBuffer))
@@ -210,7 +210,7 @@ namespace ElectrumXClient
                 }
 
             }
-   
+
             return string.Empty;
         }
 
